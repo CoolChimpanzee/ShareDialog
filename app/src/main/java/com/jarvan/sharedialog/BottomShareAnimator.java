@@ -1,4 +1,4 @@
-package utils;
+package com.jarvan.sharedialog;
 
 import android.animation.TypeEvaluator;
 

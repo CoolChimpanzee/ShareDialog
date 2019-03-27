@@ -13,11 +13,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-
-import com.jarvan.sharedialog.R;
-
-import utils.BottomShareAnimator;
 
 /**
  * 自定义底部弹出分享带动画效果对话框
@@ -26,21 +23,19 @@ import utils.BottomShareAnimator;
 
 public class ShareDialog extends Dialog implements View.OnClickListener {
 
-
-    public static final String NORMAL = "normal";
-    public static final String MOREITEMS = "unNormal";
     private final Context context;
-    private final String type;
     private Handler mHandler = new Handler();
     private View view;
     private HorizontalScrollView scrollView;
     private View blurring_view;
+    private ShareBean shareBean;
+    private LinearLayout linearLayout;
 
 
-    public ShareDialog(Context context, String type) {
+    public ShareDialog(Context context, ShareBean shareBean) {
         super(context, R.style.shareDialog);
         this.context = context;
-        this.type = type;
+        this.shareBean = shareBean;
 
     }
 
@@ -61,7 +56,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         scrollView = (HorizontalScrollView) view.findViewById(R.id.hsv);
         blurring_view = view.findViewById(R.id.blurring_view);
         findViewById(R.id.cancel).setOnClickListener(this);
-
+        linearLayout = (LinearLayout) view.findViewById(R.id.lin);
 
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -73,7 +68,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
                     case MotionEvent.ACTION_UP:
                         View view = ((HorizontalScrollView) v).getChildAt(0);
                         //判断是否滑动到最右边了，如果是，就让blurring_view隐藏，否则显示
-                        if (view.getMeasuredWidth() <= v.getScrollX() + v.getWidth() + 2) {
+                        if (view.getMeasuredWidth() <= v.getScrollX() + v.getWidth() + 22) {
                             blurring_view.setVisibility(View.INVISIBLE);
                         } else {
                             blurring_view.setVisibility(View.VISIBLE);
@@ -87,10 +82,54 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
 
             }
         });
-        final LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.lin);
-        if (type.equals(NORMAL)) {
-            linearLayout.getChildAt(4).setVisibility(View.GONE);
-            linearLayout.removeViewAt(4);
+
+
+        if (shareBean.isShowMenu()) {
+            //H5返回的弹窗分享
+            if (shareBean.getShareWay() != null && shareBean.getShareWay().length > 0) {
+                linearLayout.removeAllViews();
+                for (int i = 0; i < shareBean.getShareWay().length; i++) {
+                    TextView textView = (TextView) getLayoutInflater().inflate(R.layout.bottom_share_item, null);
+                    textView.setPadding(dip2px(13f), dip2px(13f), dip2px(13f), dip2px(13f));
+                    switch (shareBean.getShareWay()[i]) {
+                        case "WeChatFriends":
+                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.share_weixin_icon, 0, 0);
+                            textView.setText("微信好友");
+                            linearLayout.addView(textView, i);
+                            break;
+                        case "WeChatMoments":
+                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.share_pyq_icon, 0, 0);
+                            textView.setText("朋友圈");
+                            linearLayout.addView(textView, i);
+                            break;
+                        case "AlipayFriends":
+                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.zfb_icon, 0, 0);
+                            textView.setText("支付宝好友");
+                            linearLayout.addView(textView, i);
+                            break;
+                        case "AlipayMoments":
+                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.zfb_life_icon, 0, 0);
+                            textView.setText("支付宝动态");
+                            linearLayout.addView(textView, i);
+                            break;
+                        case "Clipboard":
+                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.copy_icon, 0, 0);
+                            textView.setText("复制链接");
+                            linearLayout.addView(textView, i);
+                            break;
+                        default:
+                            break;
+                    }
+
+
+                }
+
+            } else {
+                //默认的弹窗分享
+            }
+        } else {
+            //无弹窗单个分享
+
         }
 
 
@@ -104,8 +143,8 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
             @Override
             public void run() {
                 View view = scrollView.getChildAt(0);
-                //判断是否滑动栏到底了，如果是，就让iv这个图片隐藏，否则显示
-                if (view.getMeasuredWidth() <= scrollView.getWidth() + 2) {
+                //判断是否滑动栏到底了，如果是，就让blurring_view隐藏，否则显示
+                if (view.getMeasuredWidth() <= scrollView.getWidth() + 22) {
                     blurring_view.setVisibility(View.INVISIBLE);
                 } else {
                     blurring_view.setVisibility(View.VISIBLE);
@@ -118,7 +157,6 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
 
     private void showAnimation() {
         try {
-            final LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.lin);
             ValueAnimator fadeAnim = ObjectAnimator.ofFloat(view, "translationY", 1200, 0);
             fadeAnim.setDuration(400);
             fadeAnim.start();
@@ -175,13 +213,32 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         if (isShowing()) {
             dismiss();
         }
-        switch (v.getId()) {
-            case R.id.cancel:
+        switch (((TextView) v).getText().toString()) {
+            case "微信好友":
+                ToastUtils.showToast(context, "微信好友");
+                break;
+            case "朋友圈":
+                ToastUtils.showToast(context, "朋友圈");
+                break;
+            case "支付宝好友":
+                ToastUtils.showToast(context, "支付宝好友");
+                break;
+            case "支付宝动态":
+                ToastUtils.showToast(context, "支付宝动态");
+                break;
+            case "复制链接":
+                ToastUtils.showToast(context, "复制链接");
                 break;
             default:
                 break;
         }
 
+
+    }
+
+    private int dip2px(float dpValue) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 
 

@@ -14,7 +14,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void share(View view) {
-        ShareDialog shareDialog = new ShareDialog(this,ShareDialog.MOREITEMS);
+        ShareBean shareBean = new ShareBean();
+        shareBean.setImageArray(new String[]{"http://youimg1.c-ctrip.com/target/fd/tg/g1/M03/F8/52/CghzflWnreWAHBPlAAMJ6ZRBi2I611.jpg"});
+        shareBean.setShareUrl("https://www.i3ni.cn");
+        shareBean.setShareContent("I’m a Java Developer with an enduring interest in Coding and PUBG");
+        shareBean.setShareTitle("爱尚你");
+        shareBean.setShowMenu(true);
+        shareBean.setShareWay(new String[]{"WeChatFriends","WeChatMoments","AlipayFriends","AlipayMoments","Clipboard"});
+        shareBean.setContentType("");
+        ShareDialog shareDialog = new ShareDialog(this,shareBean);
         shareDialog.show();
     }
 }

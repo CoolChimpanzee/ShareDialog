@@ -1,0 +1,13 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tv_weixin"
+    android:layout_width="75dp"
+    android:layout_height="100dp"
+    android:clickable="true"
+    android:drawableTop="@mipmap/share_weixin_icon"
+    android:drawablePadding="10dp"
+    android:gravity="center_horizontal"
+    android:padding="10dp"
+    android:text="微信好友"
+    android:textColor="#666666"
+    android:textSize="11sp" />
