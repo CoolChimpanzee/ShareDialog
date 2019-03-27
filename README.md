@@ -1,4 +1,5 @@
 # ShareDialog
+带动画的底部弹出分享dialog，支持item横向滑动，边缘高斯模糊效果
 * ShareDialog shareDialog = new ShareDialog(this,ShareDialog.MOREITEMS);
         shareDialog.show();
 
