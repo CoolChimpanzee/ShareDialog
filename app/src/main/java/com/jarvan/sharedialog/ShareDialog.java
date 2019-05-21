@@ -26,7 +26,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
     private final Context context;
     private Handler mHandler = new Handler();
     private View view;
-    private HorizontalScrollView scrollView;
+    private ObservableHorizontalScrollView scrollView;
     private View blurring_view;
     private ShareBean shareBean;
     private LinearLayout linearLayout;
@@ -53,35 +53,29 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(params);
-        scrollView = (HorizontalScrollView) view.findViewById(R.id.hsv);
+        scrollView = (ObservableHorizontalScrollView) view.findViewById(R.id.hsv);
         blurring_view = view.findViewById(R.id.blurring_view);
         findViewById(R.id.cancel).setOnClickListener(this);
         linearLayout = (LinearLayout) view.findViewById(R.id.lin);
-
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        scrollView.setScrollViewListener(new ObservableHorizontalScrollView.ScrollViewListener() {
+            //滑动监听,获取图片
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                switch (event.getAction()) {
-                    //如果触动屏幕就执行
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_UP:
-                        View view = ((HorizontalScrollView) v).getChildAt(0);
-                        //判断是否滑动到最右边了，如果是，就让blurring_view隐藏，否则显示
-                        if (view.getMeasuredWidth() <= v.getScrollX() + v.getWidth() + 22) {
-                            blurring_view.setVisibility(View.INVISIBLE);
-                        } else {
-                            blurring_view.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                    default:
-                        break;
-
+            public void onScrollChanged(ObservableHorizontalScrollView scrollView, int x, int y,
+                                        int oldx, int oldy) {
+                int scrollX = scrollView.getScrollX();
+                int width = scrollView.getWidth();
+                int scrollViewMeasuredWidth = scrollView.getChildAt(0).getMeasuredWidth();
+                if ((scrollX + width) >= scrollViewMeasuredWidth) {
+                    //System.out.println("滑动到了底部 scrollY=" + scrollX + "height=" + width + "scrollViewMeasuredHeight=" + scrollViewMeasuredWidth);
+                    blurring_view.setVisibility(View.INVISIBLE);
+                } else {
+                    blurring_view.setVisibility(View.VISIBLE);
                 }
-                return false;
 
             }
+
         });
+
 
 
         if (shareBean.isShowMenu()) {

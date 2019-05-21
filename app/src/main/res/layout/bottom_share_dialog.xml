@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <HorizontalScrollView
+                <com.jarvan.sharedialog.ObservableHorizontalScrollView
                     android:id="@+id/hsv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                     </LinearLayout>
 
 
-                </HorizontalScrollView>
+                </com.jarvan.sharedialog.ObservableHorizontalScrollView>
 
                 <View
                     android:id="@+id/blurring_view"
